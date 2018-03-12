@@ -17,7 +17,7 @@ app.set('port', process.env.PORT || 3000);
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
 //Pour savoir l'addresse des templates
-app.set('views', path.join(__dirname,'views'));
+app.set('views/', path.join(__dirname,'views'));
 
 //middlewares
 app.use(cors());
@@ -38,11 +38,6 @@ io.sockets.on('connection', function(socket){
 	  socket.on('disconnect', function(){
 	  	delete players[socket.id];
 	  });
-	  socket.on('shoot', function(data){
-	  	var Nball = data;
-	  	data.owner_id = socket.id;
-	  	balls.push(Nball);
-	  });
 	  socket.on('move', function(data){
 	  	/*console.log(players[socket.id].x);*/
 	  	players[socket.id].x = data.x;
@@ -50,28 +45,25 @@ io.sockets.on('connection', function(socket){
 	  	players[socket.id].angle = data.angle;
 	  	io.emit('update-player', players);
 	  });
+
+	  socket.on('shoot', function(data){
+	  	if(players[socket.id] == undefined) return;
+	  	var new_ball = data;
+	  	data.owner_id = socket.id;
+	  	balls.push(new_ball);
+	  });
 });
 
 function ServerGameLoop(){
 	for (var i = 0; i < balls.length; i++) {
-		var b = balls[i];
-		b.x += b.speedX;
-		b.y += b.speedY;
+		var bullet = balls[i];
+		bullet.x += bullet.speed_x;
+		bullet.y += bullet.speed_y;
 
-		for(var i in players){
-			if(b.owner_id != i){
-				var dx = players[i].x - b.x;
-				var dy = players[i].y - b.y;
-				var dist = Math.sqrt(dx * dx + dy*dy);
-				if(dist < 70){
-					io.emit('hit', i);
-				}
-			}
-		}
-		/*if(b.sprite.x < -10 || b.sprite.x > 1000 || b.sprite.y < -10 || b.sprite.y > 1000){
+		if(bullet.x < -10 || bullet.x > 1000 || bullet.y < -10 || bullet.y > 1000){
 			balls.splice(i,1);
 			i--;
-		}*/
+		}
 	}
 	io.emit('balls-update', balls);
 }

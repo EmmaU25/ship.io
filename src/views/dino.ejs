@@ -63,8 +63,9 @@
 			  	ball.speed_y =  speed_y;
 			  	ball.sprite  = game.add.sprite(this.sprite.x + ball.speed_x, this.sprite.y + ball.speed_y, 'ball');
 			  	balls.push(ball);*/
+			  	socket.emit('shoot', {x: this.sprite.x, y: this.sprite.y , angle: this.sprite.rotation, speed_x: speed_x, speed_y: speed_y});
 			  	this.shot = true;
-			  	socket.emit('shoot', {x: this.sprite.x, y: this.sprite.y, angle: this.sprite.rotation, speedX: speed_x, speedY: speed_y});
+			  	
 			  }
 
 			  if(!game.input.activePointer.leftButton.isDown){
@@ -145,9 +146,9 @@
 					}
 				}
 
-				for (var i = balls.length ; i < data.length; i++) {
-					ball[i].destroy();
-					balls[i].splice(i,1);
+				for (var i = data.length ; i < balls.length; i++) {
+					balls[i].destroy();
+					balls.splice(i,1);
 					i--;
 				}
 			})
@@ -162,25 +163,26 @@
 
 			game.world.setBounds(0,0,world_size.w, world_size.h);
 			game.camera.x = player.sprite.x - wi/2;
-			game.camera.y = player.sprite.y - he/2;
-			
+			game.camera.y = player.sprite.y - he/2;	
 		}
 
 		function GameLoop(){
 			player.update();
 
+			//Gammer camera
 			var camera_x = player.sprite.x - wi/2;
 			var camera_y = player.sprite.y - he/2;
 			game.camera.x +=(camera_x - game.camera.x) * 0.08;
 			game.camera.y +=(camera_y - game.camera.y) * 0.08;
-
-			for(var id  in others){
+			
+			/*for(var id  in others){
 				if (others[id].alpha < 1) {
 					others[id].alpha += (1 - others[id].alpha) * 0.16; 
 				}else {
 					others[id].alpha = 1;
 				}
-			}
+			}*/
+
 			/*for (var i = 0; i < balls.length; i++) {
 				var bull = balls[i];
 				bull.sprite.x += bull.speed_x;
@@ -190,12 +192,9 @@
 					bull.sprite.destroy();
 					balls.splice(i,1);
 					i--;
-				}*/
-
-
-			}
-		
-
+				}		
+			}*/
+ 		}
 
 	</script>
 </body>
