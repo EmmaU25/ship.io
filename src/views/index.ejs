@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Accueil</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  </head>
+
+  <body ng-app="userApi">
+
+    <div class="overlay"></div>
+    <div class="masthead">
+      <div class="masthead-bg">
+      	
+      </div>
+      <div class="container h-100">
+        <div class="row h-100">
+          <div class="col-12 my-auto">
+            <div class="masthead-content text-white py-5 py-md-0">
+              <h1 class="mb-3"> <%= Title %> </h1>
+              <p class="mb-5">Le jeux video le plus connu de Chrome..</strong>! Maintenant en multijoueur!</p>
+              <div class="input-group input-group-newsletter" ng-controller="userRandom">
+              	<form action="/goGame" method="GET">
+              		<p> {{ res.content }} </p>
+              		<input type="text" class="form-control"  ng-model="res.content" name="username" aria-describedby="basic-addon" disabled>
+	                <div class="input-group-append">
+	                  <input type="submit" value="On y vas"/>
+	                </div>	
+              	</form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    
+
+   <!-- <div class="social-icons">
+      <ul class="list-unstyled text-center mb-0">
+        <li class="list-unstyled-item">
+          <a href="#">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-unstyled-item">
+          <a href="#">
+            <i class="fa fa-facebook"></i>
+          </a>
+        </li>
+        <li class="list-unstyled-item">
+          <a href="#">
+            <i class="fa fa-instagram"></i>
+          </a>
+        </li>
+      </ul>
+    </div>  -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js"></script>
+    <script type="text/javascript">
+    	var myapp = angular.module('userApi', []);
+    	myapp.controller('userRandom', function  ($scope,$http) {
+    		$http.get('http://rest-service.guides.spring.io/greeting').then(function(reponse){
+    			$scope.res = reponse.data;
+    		});
+    	});
+    </script>
+
+  </body>
+
+</html>
