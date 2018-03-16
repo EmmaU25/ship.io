@@ -1,27 +1,20 @@
 //constantes globales du serveur
-const cors = require('cors');
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
 const task = require('./routes/task');
-/*const parse = require('body-parser');*/
+const request = require('request');
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-//parametres
 app.set('port', process.env.PORT || 3000);
 //Pour etablir la façon de render les templates
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
 //Pour savoir l'addresse des templates
 app.set('views', path.join(__dirname,'views'));
-
-//middlewares
-app.use(cors());
 app.use(express.json());
-app.use(session({secret:'shhh'}));
-app.use(express.static('public/'));
 
 //Routes
 app.get('/', (req, res, next) => {
@@ -30,19 +23,17 @@ app.get('/', (req, res, next) => {
 	});
 });
 
-app.get('/goGame', function(req, res) {
-	//var user = req.body.user;
-	//console.log("user:", user);
-	//res.redirect('/game');
-	res.render('dino');
-});
+app.post('/data', (req, res) =>{
+	var user = req.body.user;
+	console.log("user:", user);
+})
 
-/*app.get('/game', (req,res,next) => {
-	res.render('dino.ejs',{
-		user: req.body.user
+app.get('/goGame',(req, res) => {
+	//res.redirect('/game');
+	res.render('dino',{ 
+
 	});
 });
-*/
 
 //socket IO
 var players = {};

@@ -44,7 +44,6 @@
 				var directionX = (game.input.mousePointer.x + game.camera.x) - this.sprite.x;
 				var directionY = (game.input.mousePointer.y + game.camera.y) - this.sprite.y;
 				var angle = Math.atan2(directionY, directionX) - Math.PI/2;
-				console.log("x" + directionX +" y" + directionY +"angle" + angle);
 				var dir =  (angle - this.sprite.rotation) / (Math.PI * 2);
 					
 				dir -= Math.round(dir);
@@ -55,6 +54,7 @@
 				if(game.input.keyboard.isDown(Phaser.Keyboard.Z) || game.input.keyboard.isDown(Phaser.Keyboard.UP) || game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
 					this.speed_x += Math.cos(this.sprite.rotation + 2) * this.speed;
 					this.speed_y += Math.sin(this.sprite.rotation  + 2) * this.speed;
+					socket.emit('move', {x: this.sprite.x, y: this.sprite.y, angle: this.sprite.rotation});
 				}
 
 				this.sprite.x += this.speed_x;
@@ -87,7 +87,7 @@
 			  	this.sprite.alpha = 1;
 			  }
 
-			  socket.emit('move', {x: this.sprite.x, y: this.sprite.y, angle: this.sprite.rotation});
+			  
 			}
 		}
 
