@@ -2,16 +2,22 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Ship.io</title>
+	<title>ship.io</title>
 	<style>
 		body{
 			margin: 0;
+			position: relative;
+			background-color: #9FC7E1;
+
+		}
+		canvas {
+			margin: auto;
 		}
 	</style>
 </head>
 <body>
-<p><%= user %></p>
-	
+
+	<img src="/images/head.jpg">
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/2.4.2/phaser.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -20,7 +26,7 @@
 		var wi = 750;
 		var he = 500;
 		var game = new Phaser.Game(wi, he, Phaser.Auto, '', {preload: preload, create: create, update: GameLoop});
-		var world_size =  {w: 900, h: 700};
+		var world_size =  {w: 1000, h: 900};
 		var others = {};
 		var balls = [];
 		var socket;
@@ -32,20 +38,23 @@
 			speed: 1,
 			friction: 0.95,
 			shot: false,
+			score: 0,
 			update: function(){
 				//Mouse Rotation
 				var directionX = (game.input.mousePointer.x + game.camera.x) - this.sprite.x;
 				var directionY = (game.input.mousePointer.y + game.camera.y) - this.sprite.y;
 				var angle = Math.atan2(directionY, directionX) - Math.PI/2;
+				console.log("x" + directionX +" y" + directionY +"angle" + angle);
 				var dir =  (angle - this.sprite.rotation) / (Math.PI * 2);
+					
 				dir -= Math.round(dir);
 				dir = dir * Math.PI * 2;
 				this.sprite.rotation += dir * 0.1;
 
 				// Game Controls 
 				if(game.input.keyboard.isDown(Phaser.Keyboard.Z) || game.input.keyboard.isDown(Phaser.Keyboard.UP) || game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
-					this.speed_x += Math.cos(this.sprite.rotation + Math.PI/2) * this.speed;
-					this.speed_y += Math.sin(this.sprite.rotation  + Math.PI/2) * this.speed;
+					this.speed_x += Math.cos(this.sprite.rotation + 2) * this.speed;
+					this.speed_y += Math.sin(this.sprite.rotation  + 2) * this.speed;
 				}
 
 				this.sprite.x += this.speed_x;
@@ -73,7 +82,7 @@
 			  }
 
 			  if(this.sprite.alpha < 1){
-			  	this.sprite.alpha +=(1 - this.sprite.alpha) * 0.16;
+			  	this.sprite.alpha += (1 - this.sprite.alpha) * 0.16;
 			  }else {
 			  	this.sprite.alpha = 1;
 			  }
@@ -105,7 +114,7 @@
 			player.sprite = game.add.sprite(Math.random() * world_size.w/2 + world_size.w/2, Math.random() * world_size.h/2 + world_size.h/2, 'ship');
 			player.sprite.anchor.setTo(0.5,0,5);
 			//Dire au serveur qu'un nouveu utilisateur est arrivé
-			socket.emit('new-player', {x:player.sprite.x, y: player.sprite.y,angle:player.sprite.rotation});
+			socket.emit('new-player', {x:player.sprite.x, y: player.sprite.y,angle:player.sprite.rotation,score:player.score});
 
 			//Creer un nouveau jouer
 			/*socket.on('create-new-player', function(res){
@@ -117,7 +126,7 @@
 				for(var i in data){
 					if(others[i] == undefined && i != socket.id){
 						var d = data[i];
-						others[i] = createShip(d.x,d.y,d.angle);
+						others[i] = createShip(d.x,d.y,d.angle,d.score);
 					}
 					found[i] = true;
 
@@ -131,7 +140,7 @@
 				for(var y in others){
 					if(!found[y]){
 						others[i].destroy();
-						delete other[i];
+						delete others[i];
 					}
 				}
 			})
@@ -156,8 +165,10 @@
 			socket.on('hit', function(id){
 				if(id == socket.id){
 					player.sprite.alpha = 0;
+					player.score --;
 				}else {
-					other[id].alpha = 0;
+					others[id].alpha = 0;
+					others[id].score --;
 				}
 			})
 
@@ -175,14 +186,18 @@
 			game.camera.x +=(camera_x - game.camera.x) * 0.08;
 			game.camera.y +=(camera_y - game.camera.y) * 0.08;
 			
-			/*for(var id  in others){
+			for(var id  in others){
 				if (others[id].alpha < 1) {
 					others[id].alpha += (1 - others[id].alpha) * 0.16; 
 				}else {
 					others[id].alpha = 1;
 				}
-			}*/
+			}
 
+			//Partie collision
+			/*for(var l in others){
+				game.physics.arcade.collide(others[socket.id], others[l]);
+			}*/
 			/*for (var i = 0; i < balls.length; i++) {
 				var bull = balls[i];
 				bull.sprite.x += bull.speed_x;

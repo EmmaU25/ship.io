@@ -3,8 +3,6 @@ const cors = require('cors');
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
-
-const route = require('./routes/index');
 const task = require('./routes/task');
 /*const parse = require('body-parser');*/
 const app = express();
@@ -17,20 +15,43 @@ app.set('port', process.env.PORT || 3000);
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
 //Pour savoir l'addresse des templates
-app.set('views/', path.join(__dirname,'views'));
+app.set('views', path.join(__dirname,'views'));
 
 //middlewares
 app.use(cors());
 app.use(express.json());
 app.use(session({secret:'shhh'}));
+app.use(express.static('public/'));
+
+//Routes
+app.get('/', (req, res, next) => {
+	res.render('index',{
+		Title: "ship.io"
+	});
+});
+
+app.get('/goGame', function(req, res) {
+	//var user = req.body.user;
+	//console.log("user:", user);
+	//res.redirect('/game');
+	res.render('dino');
+});
+
+/*app.get('/game', (req,res,next) => {
+	res.render('dino.ejs',{
+		user: req.body.user
+	});
+});
+*/
+
 //socket IO
 var players = {};
 var balls = [];
 io.sockets.on('connection', function(socket){
- 	console.log("New client has connected with id:", socket.id);
+ 	//console.log("New client has connected with id:", socket.id);
 	  
 	  socket.on('new-player', function (data) {
-		console.log("new player has state", data);
+		//console.log("new player has state", data);
 	    players[socket.id] = data;
 	    io.emit('update-player', players);
 	  });
@@ -59,7 +80,17 @@ function ServerGameLoop(){
 		var bullet = balls[i];
 		bullet.x += bullet.speed_x;
 		bullet.y += bullet.speed_y;
-
+		
+		for(var id in players){
+			if(bullet.owner_id != id){
+				var dx = players[id].x - bullet.x;
+				var dy = players[id].y - bullet.y;
+				var dist = Math.sqrt(dx *dx + dy*dy);
+				if(dist < 70){
+					io.emit('hit', id);
+				}
+			}
+		}
 		if(bullet.x < -10 || bullet.x > 1000 || bullet.y < -10 || bullet.y > 1000){
 			balls.splice(i,1);
 			i--;
@@ -68,10 +99,9 @@ function ServerGameLoop(){
 	io.emit('balls-update', balls);
 }
 setInterval(ServerGameLoop,16);
-//routes
-app.use(route);
+
 app.use(task);
 
 server.listen(app.get('port'), () => {
-	console.log(' server on port', app.get('port'));
+	console.log('server on port', app.get('port'));
 });

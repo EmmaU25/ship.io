@@ -6,15 +6,16 @@ router.get('/', (req, res, next) => {
 	});
 });
 
-router.get('/goGame', (req,res,next) => {
-	req.session.user = req.query.username;
-	console.log("user:", req.session.user);
+router.post('/goGame', (req,res,next) => {
+	var user = req.body.user;
+	console.log("user:", user);
 	res.redirect('/game');
 });
 
 router.get('/game', (req,res,next) => {
 	res.render('dino.ejs',{
-		user: req.session.user
+		user: req.body.user
 	});
 });
+
 module.exports = router;
