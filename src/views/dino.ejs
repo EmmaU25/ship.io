@@ -84,11 +84,23 @@
 		.rigth {
 		    border: 1px solid black;
 		    float: right;
-		   width: 250px;
-		   height: 100px
-		   margin-top: 0px;
+		    margin-top: 0px;
+		   
+		}
+
+		.score{
+			float: right;
+			border: 1px solid black;
+			width: 250px;
+		   height: 100px;
 		   overflow-x: hidden;
-			overflow-y: auto;
+		   overflow-y: auto;
+		}
+		.cont{
+		   width: 250px;
+		   height: 100px;
+		   overflow-x: hidden;
+		   overflow-y: auto;
 		}
 
 	</style>
@@ -133,10 +145,20 @@
 
 	</div>
 	<div class="rigth">
+		<div class="cont">
 			<ul id="status">
 				
 			</ul>
-		</div>
+		</div>	
+
+		<div class="score">
+			<ul id="scor">
+				
+			</ul>
+		</div>	
+	</div>
+
+	
 </div>
 
 
@@ -254,7 +276,7 @@
 				for(var i in data){
 					if(others[i] == undefined && i != socket.id){
 						var d = data[i];
-						others[i] = createShip(d.x,d.y,d.angle,d.ship);
+						others[i] = createShip(d.x,d.y,d.angle,d.ship,d.score);
 					}
 					found[i] = true;
 
@@ -273,6 +295,13 @@
 					}
 				}
 			})
+
+
+			socket.on('scor',function(d){
+				for(var i in d){
+					$('#scor').append("<li>"+d[i].username+' : '+d[i].score+"Points</li>");
+				}
+			});
 
 			socket.on('balls-update', function(data){
 				for (var i = 0; i < data.length; i++) {
@@ -333,15 +362,11 @@
 					others[id].alpha = 1;
 				}
 			}
-
-			
  		}
-
 
  		function sendMessage(){
  				socket.emit('message', document.getElementById('btn-input').value);
- 				document.getElementById('btn-input').value = " ";
- 				return false;	
+ 				document.getElementById('btn-input').value = " ";	
  		}
 
 	</script>

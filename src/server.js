@@ -59,7 +59,6 @@ io.sockets.on('connection', function(socket){
 		//console.log("new player has state", data);
 	    players[socket.id] = data;
 	    players[socket.id].username = userN;
-	    console.log(players);
 	    io.emit('update-player', players);
 	  });
 	  
@@ -74,6 +73,7 @@ io.sockets.on('connection', function(socket){
 	  	players[socket.id].y = data.y;
 	  	players[socket.id].angle = data.angle;
 	  	io.emit('update-player', players);
+
 	  });
 
 	  socket.on('shoot', function(data){
@@ -87,8 +87,10 @@ io.sockets.on('connection', function(socket){
 	  	socket.emit('msg',"<li>"+ players[data.shoot].username +" a touché "+players[data.fired].username+"</li>");
 	  	socket.broadcast.emit('msg', "<li>"+players[data.shoot].username +" a touché "+players[data.fired].username+"</li>");
 	  	players[data.shoot].score +=1;
+	  	socket.emit('scor', players);
+	  	socket.broadcast.emit('scor', players)
 	  });
-
+  
 	  socket.on('message', function(msg){
 	  	socket.emit('message',"<li class='left clearfix'><span class='chat-img pull-left'><img src='https://icon-icons.com/icons2/706/PNG/512/cruise-ship_icon-icons.com_61851.png' alt='User Avatar' class='img-circle'/></span><div class='chat-body clearfix'><div class='header'><strong class='primary-font'>"+players[socket.id].username+":</strong></div><p>"+msg+"</p></div></li");
 	  	socket.broadcast.emit('message',"<li class='left clearfix'><span class='chat-img pull-left'><img src='https://icon-icons.com/icons2/706/PNG/512/cruise-ship_icon-icons.com_61851.png' alt='User Avatar' class='img-circle'/></span><div class='chat-body clearfix'><div class='header'><strong class='primary-font'>"+players[socket.id].username+":</strong></div><p>"+msg+"</p></div></li>");
