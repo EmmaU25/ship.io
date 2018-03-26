@@ -5,24 +5,148 @@
 	<title>ship.io</title>
 	<style>
 		body{
-			margin: 0;
+			margin: 7;
 			position: relative;
 			background-color: #9FC7E1;
-
 		}
 		canvas {
 			margin: auto;
 		}
+		.chat
+		{
+		    list-style: none;
+		    margin: 0;
+		    padding: 0;
+		    overflow-x: hidden;
+			overflow-y: auto;
+		}
+		
+		.panel-body{
+			height: 500px;
+			width: 270px;
+			overflow-x: hidden;
+			overflow-y: auto;
+		}
+		
+		#bar-chat{
+			position: absolute;
+		}
+
+		.img-circle{
+			width: 20px;
+			height: 20px;
+		}
+		.chat li
+		{
+		    margin-bottom: 10px;
+		    padding-bottom: 5px;
+		    border-bottom: 1px dotted #B3A9A9;
+
+		}
+
+		.chat li.left .chat-body
+		{
+		    margin-left: 60px;
+		}
+		
+		.chat li.right .chat-body
+		{
+		    margin-right: 60px;
+		}
+
+
+		.chat li .chat-body p
+		{
+		    margin: 0;
+		    color: #777777;
+		}	
+
+
+
+		::-webkit-scrollbar-track
+		{
+		    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+		    background-color: #F5F5F5;
+		}
+
+		::-webkit-scrollbar
+		{
+		    width: 12px;
+		    background-color: #F5F5F5;
+		}
+
+		::-webkit-scrollbar-thumb
+		{
+		    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+		    background-color: #555;
+		}
+		
+		.rigth {
+		    border: 1px solid black;
+		    float: right;
+		   width: 250px;
+		   height: 100px
+		   margin-top: 0px;
+		   overflow-x: hidden;
+			overflow-y: auto;
+		}
+
 	</style>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 <body>
 
-	<img src="/images/head.jpg">
+<div class="jumbotron">
+  <div class="container">
+    <h1>Hello, <a href="#" class="navbar-link"><%= user %></a> !</h1>
+  <p>Amusez bien la bataille navale</p>
+  </div>
+</div>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-4">
+			    <div class="row">
+			        <div class="col-md-8" id="bar-chat">
+			            <div class="panel panel-primary">
+			                <div class="panel-heading">
+			                    <span class="glyphicon glyphicon-comment"></span> Chat
+			                </div>
+			                <div class="panel-body">
+			                    <ul class="chat" id="chat">
+			                    
+			                    </ul>
+			                </div>
+			                <div class="panel-footer">
+		                		<div class="input-group">
+		                        <input id="btn-input" type="text" class="form-control input-sm" placeholder="Ecrivez votre message..." />
+		                        <span class="input-group-btn">
+		                            <button class="btn btn-warning btn-sm" id="btn-chat" onclick="sendMessage()">
+		                                Send</button>
+		                        </span>
+		                    	</div>
+			                </div>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+
+	</div>
+	<div class="rigth">
+			<ul id="status">
+				
+			</ul>
+		</div>
+</div>
+
+
+
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/2.4.2/phaser.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 	<script type="text/javascript">
-		
+
 		var wi = 750;
 		var he = 500;
 		var game = new Phaser.Game(wi, he, Phaser.Auto, '', {preload: preload, create: create, update: GameLoop});
@@ -39,6 +163,7 @@
 			friction: 0.95,
 			shot: false,
 			score: 0,
+			ship:"",
 			update: function(){
 				//Mouse Rotation
 				var directionX = (game.input.mousePointer.x + game.camera.x) - this.sprite.x;
@@ -59,24 +184,21 @@
 
 				this.sprite.x += this.speed_x;
 				this.sprite.y += this.speed_y;
+
 				this.speed_x *= this.friction;
 				this.speed_y *= this.friction;
 
-			  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			  ////////////////////// Control de la souris///////////////////////////////////////////////////////////////////////
 
 			  if(game.input.activePointer.leftButton.isDown && !this.shot){
 			  	var speed_x = Math.cos(this.sprite.rotation + Math.PI/2) * 20;
 			  	var speed_y = Math.sin(this.sprite.rotation + Math.PI/2) * 20;
-			  	/*var ball = {};
-			  	ball.speed_x = speed_x;
-			  	ball.speed_y =  speed_y;
-			  	ball.sprite  = game.add.sprite(this.sprite.x + ball.speed_x, this.sprite.y + ball.speed_y, 'ball');
-			  	balls.push(ball);*/
 			  	socket.emit('shoot', {x: this.sprite.x, y: this.sprite.y , angle: this.sprite.rotation, speed_x: speed_x, speed_y: speed_y});
 			  	this.shot = true;
 			  	
 			  }
 
+			  /////////////////////////////////Clic shoot ////////////////////////////////////////////////////////////////////
 			  if(!game.input.activePointer.leftButton.isDown){
 			  	this.shot = false;
 			  }
@@ -91,42 +213,48 @@
 			}
 		}
 
-
+		///////chargement des images/////////////////////////////////////////////////////////////////////////
 		function preload(){
 			game.load.crossOrigin = "Anonymous";
 			game.stage.backgroundColor = "#3399DA";
-			game.load.image('ship', 'https://cdn.glitch.com/d371c629-b475-4d7b-88bc-b2558ae406a4%2Fship2_2.png');
+			game.load.image('ship1', 'https://cdn.glitch.com/d371c629-b475-4d7b-88bc-b2558ae406a4%2Fship2_2.png');
+			game.load.image('ship2', 'https://cdn.glitch.com/d371c629-b475-4d7b-88bc-b2558ae406a4%2Fship3_3.png');
+			game.load.image('ship3', 'https://cdn.glitch.com/d371c629-b475-4d7b-88bc-b2558ae406a4%2Fship4_3.png');
+			game.load.image('ship4', 'https://cdn.glitch.com/d371c629-b475-4d7b-88bc-b2558ae406a4%2Fship5_1.png');
+			game.load.image('ship5', 'https://cdn.glitch.com/d371c629-b475-4d7b-88bc-b2558ae406a4%2Fship6_1.png');
 			game.load.image('ball', 'https://cdn.glitch.com/d371c629-b475-4d7b-88bc-b2558ae406a4%2Fcannon_ball.png');
 		}
 
-
-		function createShip(x,y,angle){
-			var s = game.add.sprite(x,y,'ship');
+		function createShip(x,y,angle,ship){
+			var s = game.add.sprite(x,y,ship);
 			s.rotation = angle;
 			s.anchor.setTo(0.5,0.5);
 			return s;
 		}
 
+	 	function collisionHandler (others){
+			for(id in others){
+				others[id].play('flash');
+			}
+ 		}
 
 		function create () {
-			/* body... */
 			socket = io.connect('http://localhost:3000')
-			player.sprite = game.add.sprite(Math.random() * world_size.w/2 + world_size.w/2, Math.random() * world_size.h/2 + world_size.h/2, 'ship');
+			var num = Math.floor(Math.random() * 5) + 1;
+			player.ship = "ship"+num;
+			player.sprite = game.add.sprite(Math.random() * world_size.w/2 + world_size.w/2, Math.random() * world_size.h/2 + world_size.h/2, player.ship);
 			player.sprite.anchor.setTo(0.5,0,5);
+
 			//Dire au serveur qu'un nouveu utilisateur est arrivé
-			socket.emit('new-player', {x:player.sprite.x, y: player.sprite.y,angle:player.sprite.rotation,score:player.score});
+			socket.emit('new-player', {x:player.sprite.x, y: player.sprite.y,angle:player.sprite.rotation,score:player.score,ship:player.ship});
 
 			//Creer un nouveau jouer
-			/*socket.on('create-new-player', function(res){
-				createShip(res.x,res.y,res.angle)
-			})*/
-
 			socket.on('update-player', function(data){
 				var found = {};
 				for(var i in data){
 					if(others[i] == undefined && i != socket.id){
 						var d = data[i];
-						others[i] = createShip(d.x,d.y,d.angle,d.score);
+						others[i] = createShip(d.x,d.y,d.angle,d.ship);
 					}
 					found[i] = true;
 
@@ -134,13 +262,14 @@
 						others[i].x = data[i].x;
 						others[i].y = data[i].y;
 						others[i].rotation = data[i].angle;
+						others[i].ship = data[i].ship;
 					}
 				}
 
 				for(var y in others){
 					if(!found[y]){
-						others[i].destroy();
-						delete others[i];
+						others[y].destroy();
+						delete others[y];
 					}
 				}
 			})
@@ -155,6 +284,7 @@
 					}
 				}
 
+				//////Action de deconexion d'un user
 				for (var i = data.length ; i < balls.length; i++) {
 					balls[i].destroy();
 					balls.splice(i,1);
@@ -162,30 +292,40 @@
 				}
 			})
 
+			socket.on('msg',function(m){
+				$('#status').append(m);
+			})
+
+
+			socket.on('message',function(mesage){
+				$('#chat').append(mesage);
+			})
 			socket.on('hit', function(id){
 				if(id == socket.id){
 					player.sprite.alpha = 0;
-					player.score --;
 				}else {
-					others[id].alpha = 0;
-					others[id].score --;
+					socket.emit("touch", {shoot: socket.id, fired: id});
+					others[id].alpha = 0;	
 				}
 			})
 
 			game.world.setBounds(0,0,world_size.w, world_size.h);
 			game.camera.x = player.sprite.x - wi/2;
-			game.camera.y = player.sprite.y - he/2;	
+			game.camera.y = player.sprite.y - he/2;
+			game.physics.startSystem(Phaser.Physics.ARCADE);
+			game.physics.enable(others, Phaser.Physics.ARCADE);
+
 		}
 
 		function GameLoop(){
 			player.update();
-
 			//Gammer camera
 			var camera_x = player.sprite.x - wi/2;
 			var camera_y = player.sprite.y - he/2;
 			game.camera.x +=(camera_x - game.camera.x) * 0.08;
 			game.camera.y +=(camera_y - game.camera.y) * 0.08;
-			
+			game.physics.arcade.collide(others,collisionHandler,null,this);
+
 			for(var id  in others){
 				if (others[id].alpha < 1) {
 					others[id].alpha += (1 - others[id].alpha) * 0.16; 
@@ -194,21 +334,14 @@
 				}
 			}
 
-			//Partie collision
-			/*for(var l in others){
-				game.physics.arcade.collide(others[socket.id], others[l]);
-			}*/
-			/*for (var i = 0; i < balls.length; i++) {
-				var bull = balls[i];
-				bull.sprite.x += bull.speed_x;
-				bull.sprite.y += bull.speed_y;
+			
+ 		}
 
-				if(bull.sprite.x < -10 || bull.sprite.x > world_size.w || bull.sprite.y < -10 || bull.sprite.y > world_size.h){
-					bull.sprite.destroy();
-					balls.splice(i,1);
-					i--;
-				}		
-			}*/
+
+ 		function sendMessage(){
+ 				socket.emit('message', document.getElementById('btn-input').value);
+ 				document.getElementById('btn-input').value = " ";
+ 				return false;	
  		}
 
 	</script>

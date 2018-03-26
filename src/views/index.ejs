@@ -53,11 +53,11 @@
           <hr class="marginbot-50">
         </div>
       </div>
-      <div class="row">
+      <div class="row" ng-controller="userRandom">
         <div class="col-md-12">
           <div class="wow bounceInUp" data-wow-delay="0.2s">
             <div class="team boxed-grey">
-              <div class="inner" ng-controller="userRandom" >
+              <div class="inner"  >
                 <h5>Utilisateur</h5>
                   <div ng-repeat="f in res.results">
                     <form id="myform" name="myform" ng-submit="save()" action="goGame" method="GET">  
@@ -80,7 +80,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.2/jquery.scrollTo.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js"></script>
 
     <script type="text/javascript">
