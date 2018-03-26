@@ -16,7 +16,7 @@ var users = [];
 var userN;
 
 
-	app.use(cookieParser());
+app.use(cookieParser());
 app.set('port', process.env.PORT || 3000);
 //Pour etablir la façon de render les templates
 app.engine('html', require('ejs').renderFile);
@@ -67,13 +67,13 @@ io.sockets.on('connection', function(socket){
 	  	users.splice(index,1);
 	  	delete players[socket.id];
 	  });
+
 	  socket.on('move', function(data){
 	  	/*console.log(players[socket.id].x);*/
 	  	players[socket.id].x = data.x;
 	  	players[socket.id].y = data.y;
 	  	players[socket.id].angle = data.angle;
 	  	io.emit('update-player', players);
-
 	  });
 
 	  socket.on('shoot', function(data){
@@ -86,7 +86,9 @@ io.sockets.on('connection', function(socket){
 	  socket.on("touch", function(data){
 	  	socket.emit('msg',"<li>"+ players[data.shoot].username +" a touché "+players[data.fired].username+"</li>");
 	  	socket.broadcast.emit('msg', "<li>"+players[data.shoot].username +" a touché "+players[data.fired].username+"</li>");
+
 	  	players[data.shoot].score +=1;
+
 	  	socket.emit('scor', players);
 	  	socket.broadcast.emit('scor', players)
 	  });

@@ -82,15 +82,15 @@
 		}
 		
 		.rigth {
-		    border: 1px solid black;
+			border: 1px solid black;
+		    margin-left: 0;
 		    float: right;
 		    margin-top: 0px;
 		   
 		}
-
+		
 		.score{
 			float: right;
-			border: 1px solid black;
 			width: 250px;
 		   height: 100px;
 		   overflow-x: hidden;
@@ -116,7 +116,7 @@
 </div>
 
 <div class="container-fluid">
-	<div class="row">
+	<div class="row" >
 		<div class="col-md-4">
 			    <div class="row">
 			        <div class="col-md-8" id="bar-chat">
@@ -143,23 +143,23 @@
 		    </div>
 		</div>
 
-	</div>
 	<div class="rigth">
 		<div class="cont">
 			<ul id="status">
 				
 			</ul>
 		</div>	
-
+			
 		<div class="score">
 			<ul id="scor">
 				
 			</ul>
 		</div>	
 	</div>
-
-	
+	</div>
 </div>
+
+
 
 
 
@@ -201,7 +201,7 @@
 				if(game.input.keyboard.isDown(Phaser.Keyboard.Z) || game.input.keyboard.isDown(Phaser.Keyboard.UP) || game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
 					this.speed_x += Math.cos(this.sprite.rotation + 2) * this.speed;
 					this.speed_y += Math.sin(this.sprite.rotation  + 2) * this.speed;
-					socket.emit('move', {x: this.sprite.x, y: this.sprite.y, angle: this.sprite.rotation});
+					
 				}
 
 				this.sprite.x += this.speed_x;
@@ -230,8 +230,8 @@
 			  }else {
 			  	this.sprite.alpha = 1;
 			  }
-
 			  
+			  socket.emit('move', {x: this.sprite.x, y: this.sprite.y, angle: this.sprite.rotation});
 			}
 		}
 
@@ -329,6 +329,7 @@
 			socket.on('message',function(mesage){
 				$('#chat').append(mesage);
 			})
+
 			socket.on('hit', function(id){
 				if(id == socket.id){
 					player.sprite.alpha = 0;

@@ -10,26 +10,51 @@
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <style>
+      body{
+        background-image: url(https://marketplace.canva.com/MAB9jFacgZY/1/thumbnail_large/canva-battleship-background-MAB9jFacgZY.png);
+      }
+      .title {
+      text-align: center;
+      color: #FCDB00;
+      font-family: impact;
+      font-size: 46px;
+      text-shadow: -1px -1px 1px #000, 1px 1px 1px #000, -1px 1px 1px #000, 1px -1px 1px #000;
+      -webkit-text-fill-color: #FCDB00;
+      -webkit-text-stroke: 2px black;
+      }
+
+      .user {
+      text-align:center; 
+      color: #fff;
+      font-family: impact;
+      font-size: 40px;
+      letter-spacing: 0;
+      text-shadow: -3px -3px 3px #0000DF, 3px -3px 3px #0000DF, -3px 3px 3px #0000DF, 3px 3px 3px #0000DF;
+      }
+    </style>
   </head>
 
   <body ng-app="userApi">
     <div id="preloader">
       <div id="load"></div>
     </div>
-
-  <section id="intro" class="intro">
-
-    <div class="slogan">
-      <h2>Welcome to <span class="text_color">ship.io</span> </h2>
-      <h4>Bataille navale multijouer en sockets.io</h4>
+<div class="container">
+  <div class="row">
+    
+    <div class="slogan"  style="text-align: center;" >
+      <h1 class="title">Welcome to <span class="text_color">ship.io</span> </h1>
+      <h2 class="title" >Bataille navale multijouer en sockets.io</h2>
     </div>
     <div class="page-scroll">
-      <a href="#about" class="btn btn-circle">
+      <a href="#" class="btn btn-circle">
         <i class="fa fa-angle-double-down animated"></i>
       </a>
     </div>
-  </section>
-
+  </div>
+</div>
+ 
   <section id="about" class="home-section text-center">
     <div class="heading-about">
       <div class="container">
@@ -37,7 +62,7 @@
           <div class="col-lg-8 col-lg-offset-2">
             <div class="wow bounceInDown" data-wow-delay="0.4s">
               <div class="section-heading">
-                <h2>Nom d'utilisateur aleatoire</h2>
+                <h4 class="user">Nom d'utilisateur aleatoire</h4>
                 <i class="fa fa-2x fa-angle-down"></i>
 
               </div>
@@ -58,13 +83,12 @@
           <div class="wow bounceInUp" data-wow-delay="0.2s">
             <div class="team boxed-grey">
               <div class="inner"  >
-                <h5>Utilisateur</h5>
                   <div ng-repeat="f in res.results">
                     <form id="myform" name="myform" ng-submit="save()" action="goGame" method="GET">  
                         <input type="text" class="form-control" ng-value="f.login.username"  aria-describedby="basic-addon" disabled>
                         <br>
                         <div class="input-group-append">
-                          <input class="btn btn-success" id="submit" type="submit" value="Jouer"/>
+                          <input class="btn btn-success btn-lg" id="submit" type="submit" value="Jouer"/>
                         </div>  
                    </form>
                   </div>
